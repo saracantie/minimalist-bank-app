@@ -61,6 +61,40 @@ const inputLoanAmount = document.querySelector('.form__input--loan-amount');
 const inputCloseUsername = document.querySelector('.form__input--user');
 const inputClosePin = document.querySelector('.form__input--pin');
 
+//sempre eh melhor comecar criando uma funcao para nao trabalhar no global scope:
+const displayMovements = function (movements) {
+  //primeiro limpar as entradas antigas do conteiner:
+  containerMovements.innerHTML = '';
+  //depois adicionar as novas movimentacoes, fznd loop no array que veio da api(apesar do codigo desse ter sido feito primeiro):
+  movements.forEach(function (mov, i) {
+    const type = mov > 0 ? 'deposit' : 'withdrawal';
+
+    const html = `
+    <div class="movements__row">
+      <div class="movements__type movements__type--${type}">${
+      i + 1
+    } ${type}</div>
+      <div class="movements__value">${mov}</div>
+    </div>
+    `;
+
+    containerMovements.insertAdjacentHTML('afterbegin', html); //se aqui se usaesse BEFOREEND, a ordem dos movements iria entrar invertida ou seja as mov mais antigas primeiro. cada novo elemento seria adicionado depois
+  });
+};
+displayMovements(account1.movements);
+
+const createUsernames = function (accs) {
+  accs.forEach(function (acc) {
+    acc.username = acc.owner
+      .toLowerCase()
+      .split(' ')
+      .map(name => name[0])
+      .join('');
+  });
+};
+
+createUsernames(accounts);
+
 /////////////////////////////////////////////////
 /////////////////////////////////////////////////
 // LECTURES
@@ -133,7 +167,7 @@ movements.forEach(function (movement, index, array) {
 //1: function(450)
 //2: function(400)
 //...
-*/
+
 
 //USING FOREACH WITH MAPS
 const currencies = new Map([
@@ -153,3 +187,50 @@ currenciesUnique.forEach(function (value, _, map) {
   console.log(`${value}:${value}`);
 });
 //aqui o KEY nao serve p nd, 'e igual value
+
+
+const checkDogs = function (dogsJulia, dogsKate) {
+  const dogsJuliaCorrected = dogsJulia.slice();
+  dogsJuliaCorrected.splice(0, 1);
+  dogsJuliaCorrected.splice(-2);
+
+  const dogs = dogsJuliaCorrected.concat(dogsKate);
+
+  dogs.forEach(function (dog, i) {
+    if (dog >= 3) {
+      console.log(`Dog number ${i + 1} is an adult, and is ${dog} years old`);
+    } else {
+      console.log(`Dog number ${i + 1} is still a puppy`);
+    }
+  });
+};
+checkDogs([3, 5, 2, 12, 7], [4, 1, 15, 8, 3]);
+
+
+const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
+//MAP METHOD (resulta em um NOVO array, aplicando algo em cima):
+
+const eurToUsd = 1.1;
+
+const movementsUSD = movements.map(mov => mov * eurToUsd);
+
+console.log(movementsUSD);
+
+const movementsDescriptions = movements.map(
+  (mov, i) =>
+    `Movement ${i + 1}: You ${mov > 0 ? 'deposited' : 'withdrew'} ${Math.abs(
+      mov
+    )}`
+);
+console.log(movementsDescriptions);
+*/
+const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
+
+const deposits = movements.filter(function (mov) {
+  return mov > 0;
+});
+console.log(movements);
+console.log(deposits);
+
+const withdrawals = movements.filter(mov => mov < 0);
+console.log(withdrawals);
