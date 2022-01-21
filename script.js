@@ -83,6 +83,12 @@ const displayMovements = function (movements) {
 };
 displayMovements(account1.movements);
 
+const calcDisplayBalance = function (movements) {
+  const balance = movements.reduce((acc, mov) => acc + mov, 0);
+  labelBalance.textContent = `${balance} €`;
+};
+calcDisplayBalance(account1.movements);
+
 const createUsernames = function (accs) {
   accs.forEach(function (acc) {
     acc.username = acc.owner
@@ -223,8 +229,8 @@ const movementsDescriptions = movements.map(
     )}`
 );
 console.log(movementsDescriptions);
-*/
-const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
+
+
 
 const deposits = movements.filter(function (mov) {
   return mov > 0;
@@ -234,3 +240,14 @@ console.log(deposits);
 
 const withdrawals = movements.filter(mov => mov < 0);
 console.log(withdrawals);
+*/
+
+const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
+
+//accumulator (acc) is like a SNOWBALL. e o ultimo valor 0 eh o primeiro valor do acumulator, comeca em zero neste caso
+const balance = movements.reduce(function (acc, cur, i, arr) {
+  return acc + cur;
+}, 0);
+console.log(balance);
+
+//maximum value:
