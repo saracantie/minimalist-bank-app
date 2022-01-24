@@ -62,11 +62,14 @@ const inputCloseUsername = document.querySelector('.form__input--user');
 const inputClosePin = document.querySelector('.form__input--pin');
 
 //sempre eh melhor comecar criando uma funcao para nao trabalhar no global scope:
-const displayMovements = function (movements) {
+const displayMovements = function (movements, sort = false) {
   //primeiro limpar as entradas antigas do conteiner:
   containerMovements.innerHTML = '';
+  //se quiser colocar em ordem. se usa slice para criar uma copia e n usar o original:
+  const movs = sort ? movements.slice().sort((a, b) => a - b) : movements;
+
   //depois adicionar as novas movimentacoes, fznd loop no array que veio da api(apesar do codigo desse ter sido feito primeiro):
-  movements.forEach(function (mov, i) {
+  movs.forEach(function (mov, i) {
     const type = mov > 0 ? 'deposit' : 'withdrawal';
 
     const html = `
@@ -181,6 +184,20 @@ btnTransfer.addEventListener('click', function (e) {
   }
 });
 
+btnLoan.addEventListener('click', function (e) {
+  e.preventDefault();
+
+  const amount = Number(inputLoanAmount.value);
+
+  if (amount > 0 && currentAccount.movements.some(mov => mov >= amount * 0.1)) {
+    //add movement
+    currentAccount.movements.push(amount);
+    //update UI
+    updateUI(currentAccount);
+    inputLoanAmount.value = '';
+  }
+});
+
 btnClose.addEventListener('click', function (e) {
   e.preventDefault();
 
@@ -192,8 +209,21 @@ btnClose.addEventListener('click', function (e) {
       acc => acc.username === currentAccount.username
     );
     console.log(index);
-    // accounts.splice(index, 1);
+
+    //delete account
+    accounts.splice(index, 1);
+
+    //hide UI
+    containerApp.style.opacity = 0;
   }
+  inputCloseUsername.value = inputClosePin.value = '';
+});
+
+let sorted = false;
+btnSort.addEventListener('click', function (e) {
+  e.preventDefault();
+  displayMovements(currentAccount.movements, !sorted);
+  sorted = !sorted;
 });
 
 /////////////////////////////////////////////////
@@ -377,4 +407,51 @@ console.log(accounts);
 
 const account = accounts.find(acc => acc.owner === 'Jessica Davis');
 console.log(account);
+
+
+//SOME METHOD
+
+const anyDeposits = movements.some(mov => mov > 0);
+console.log(anyDeposits);
+
+//EVERY METHOD
+console.log(movements.every(mov => mov > 0));
+console.log(account4.movements.every(mov => mov > 0));
+
+//FLAT and FLATMAPS methods
+const arr = [[1, 2, 3], [4, 5, 6], 7, 8];
+console.log(arr.flat()); //remove os nested e deixa tds numeros em um msm array.porem ele s'o vai em UM NIVEL. sew tivesse outro aray dentro de outro ele nao flat tds sem vdc especificar no ()
+
+const overallBalance = accounts
+  .map(acc => acc.movements)
+  .flat()
+  .reduce((acc, mov) => acc + mov, 0);
+console.log(overallBalance);
+
+//FLATMAP combina flat e map em um soh metodo. igual o de cima:
+const overallBalance = accounts
+  .flatMap(acc => acc.movements)
+  .reduce((acc, mov) => acc + mov, 0);
+console.log(overallBalance);
 */
+////
+//SORTING ARRAYS
+const owners = ['Jonas', 'Zach', 'Adam', 'Martha'];
+console.log(owners.sort()); //arruma o array alfabeticamente. muta o original
+
+//com numeros:
+console.log(movements);
+// console.log(movements.sort());// transforma tudo em string e ai arruma alfabeticamente temos que arrumar:
+//return < 0, a, b (keep order)
+//return > 0, a, b (switch order)
+
+// movements.sort((a, b) => {
+//   //colocar em ordem acendente:
+//   if (a > b) return 1;
+//   if (b > a) return -1;
+// });
+
+//LOGO uma forma mais simplificada de fzr eh:
+movements.sort((a, b) => a - b);
+
+console.log(movements);
