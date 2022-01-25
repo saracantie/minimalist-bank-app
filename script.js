@@ -433,7 +433,7 @@ const overallBalance = accounts
   .flatMap(acc => acc.movements)
   .reduce((acc, mov) => acc + mov, 0);
 console.log(overallBalance);
-*/
+
 ////
 //SORTING ARRAYS
 const owners = ['Jonas', 'Zach', 'Adam', 'Martha'];
@@ -455,3 +455,41 @@ console.log(movements);
 movements.sort((a, b) => a - b);
 
 console.log(movements);
+
+const arr = [1, 2, 3, 4, 5, 6, 7];
+console.log(new Array(1, 2, 3, 4, 5, 6, 7));
+
+const x = new Array(7);
+console.log(x); //nesse caso cria-se um array de sete indices vazio!! tb n se pode usar o map nele agr para preencher
+console.log(x.map(() => 5));
+//o unico metodo possivel usar nesse caso eh o FILL METHOD
+x.fill(1, 3, 5); //no index 3 ate o 5
+console.log(x);
+
+arr.fill(23, 2, 6);
+console.log(arr);
+
+//FROM METHOD
+const y = Array.from({ length: 7 }, () => 1);
+console.log(y);
+
+const z = Array.from({ length: 7 }, (_, i) => i + 1);
+console.log(z);
+
+//////////////////////////////
+//vimos 23 metodos. SUMMARY:
+//what do i actually want from this method? mutate or a new array? an index on an element? know if element exist? new string? transform value? loop? (CONFERIR IMG)
+*/
+//////////PRACTICE/////////////
+//1.
+const bankDepositSum = accounts
+  .flatMap(acc => acc.movements)
+  .filter(mov => mov > 0)
+  .reduce((sum, cur) => sum + cur, 0);
+console.log(bankDepositSum);
+
+//2.
+const numDeposits1000 = accounts
+  .flatMap(acc => acc.movements)
+  .filter(mov => mov > 1000).length;
+console.log(numDeposits1000);
