@@ -154,7 +154,7 @@ const displayMovements = function (acc, sort = false) {
     </div>
     `;
 
-    containerMovements.insertAdjacentHTML('afterbegin', html); //se aqui se usaesse BEFOREEND, a ordem dos movements iria entrar invertida ou seja as mov mais antigas primeiro. cada novo elemento seria adicionado depois
+    containerMovements.insertAdjacentHTML('afterbegin', html); //se aqui se usasse BEFOREEND, a ordem dos movements iria entrar invertida ou seja as mov mais antigas primeiro. cada novo elemento seria adicionado depois
   });
 };
 
@@ -207,8 +207,32 @@ const updateUI = function (acc) {
   calcDisplaySummary(acc);
 };
 
+const startLogoutTimer = function () {
+  const tick = function () {
+    const min = String(Math.trunc(time / 60)).padStart(2, 0);
+    const sec = String(time % 60).padStart(2, 0);
+
+    labelTimer.textContent = `${min}:${sec}`;
+
+    if (time === 0) {
+      clearInterval(timer);
+      labelWelcome.textContent = 'Log in to get started';
+      containerApp.style.opacity = 0;
+    }
+    time--;
+  };
+  //user will be logged out after 10min of inactivity
+  let time = 600;
+  tick();
+
+  //countdown of seconds:
+  const timer = setInterval(tick, 1000);
+
+  return timer;
+};
+
 //-- EVENT HANDLER --//
-let currentAccount;
+let currentAccount, timer;
 
 btnLogin.addEventListener('click', function (e) {
   e.preventDefault(); //pois o default eh fzr reload na pagina depois de clicar no btn
@@ -249,6 +273,10 @@ btnLogin.addEventListener('click', function (e) {
     inputLoginUsername.value = inputLoginPin.value = '';
     inputLoginPin.blur();
 
+    //reset timer
+    if (timer) clearInterval(timer);
+    timer = startLogoutTimer();
+
     //update UI
     updateUI(currentAccount);
   }
@@ -278,6 +306,10 @@ btnTransfer.addEventListener('click', function (e) {
 
     //update UI
     updateUI(currentAccount);
+
+    //reset timer
+    clearInterval(timer);
+    timer = startLogoutTimer();
   }
 });
 
@@ -287,16 +319,22 @@ btnLoan.addEventListener('click', function (e) {
   const amount = Math.floor(inputLoanAmount.value);
 
   if (amount > 0 && currentAccount.movements.some(mov => mov >= amount * 0.1)) {
-    //add movement
-    currentAccount.movements.push(amount);
+    setTimeout(function () {
+      //add movement
+      currentAccount.movements.push(amount);
 
-    //add loan date
-    currentAccount.movementsDates.push(new Date().toISOString());
+      //add loan date
+      currentAccount.movementsDates.push(new Date().toISOString());
 
-    //update UI
-    updateUI(currentAccount);
-    inputLoanAmount.value = '';
+      //update UI
+      updateUI(currentAccount);
+
+      //reset timer
+      clearInterval(timer);
+      timer = startLogoutTimer();
+    }, 2500);
   }
+  inputLoanAmount.value = '';
 });
 
 btnClose.addEventListener('click', function (e) {
